@@ -1,4 +1,4 @@
-import styles from '../styles/Home.module.css'
+import styles from '../styles/Home.module.css';
 import { useState } from 'react';
 import { listTodos } from '../lib/todos';
 import { useRouter } from 'next/router';
@@ -7,9 +7,9 @@ export async function getServerSideProps(context) {
   console.log(context);
   return {
     props: {
-      todos: listTodos(),
+      todos: await listTodos(),
     },
-  }
+  };
 }
 
 export default function Todos(props) {
@@ -26,7 +26,9 @@ export default function Todos(props) {
         'Content-Type': 'application/json',
       },
     }).then(() => {
-       router.replace(router.asPath);
+      if (router) {
+        router.replace(router.asPath);
+      }
     });
   }
 
@@ -34,15 +36,18 @@ export default function Todos(props) {
     <div className={styles.container}>
       <p>My Todo App</p>
       <form onSubmit={handleSubmit}>
-        <input type="text" value={text} onChange={(e) => setText(e.target.value)} />
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
         <input type="submit" value="Submit" />
       </form>
       <ul>
-        {todos.map((todo, idx) => (
+        {Object.keys(todos).map((todo, idx) => (
           <li key={idx}>{todo}</li>
         ))}
       </ul>
     </div>
-  )
+  );
 }
-
