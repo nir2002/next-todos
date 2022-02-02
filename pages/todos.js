@@ -2,6 +2,8 @@ import styles from '../styles/Home.module.css';
 import { useState } from 'react';
 import { listTodos } from '../lib/todos';
 import { useRouter } from 'next/router';
+import { db } from '../firebase/firebaseClient';
+import { doc, updateDoc } from 'firebase/firestore';
 
 export async function getServerSideProps(context) {
   console.log(context);
@@ -19,17 +21,11 @@ export default function Todos(props) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    fetch('/api/todos', {
-      method: 'POST',
-      body: JSON.stringify(text),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(() => {
-      if (router) {
-        router.replace(router.asPath);
-      }
-    });
+
+    const todosRef = doc(db, 'nirparisian', 'todos');
+    await updateDoc(todosRef, { [text]: false }, { merge: true });
+
+    router.replace(router.asPath);
   }
 
   return (
